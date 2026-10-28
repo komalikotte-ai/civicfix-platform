@@ -13,10 +13,12 @@ public class ApiResponse<T> {
     private int statusCode;
     private String message;
     private T data;
+    private String requestId;
     private Instant timestamp;
 
     public ApiResponse() {
         this.timestamp = Instant.now();
+        this.requestId = CorrelationIdContext.get();
     }
 
     public ApiResponse(boolean success, int statusCode, String message, T data) {
@@ -24,6 +26,7 @@ public class ApiResponse<T> {
         this.statusCode = statusCode;
         this.message = message;
         this.data = data;
+        this.requestId = CorrelationIdContext.get();
         this.timestamp = Instant.now();
     }
 
@@ -69,6 +72,14 @@ public class ApiResponse<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public Instant getTimestamp() {

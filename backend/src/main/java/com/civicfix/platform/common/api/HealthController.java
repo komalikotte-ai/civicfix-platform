@@ -1,5 +1,8 @@
 package com.civicfix.platform.common.api;
 
+import org.springframework.boot.actuate.health.HealthComponent;
+import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +21,24 @@ public class HealthController {
                 "timestamp", Instant.now().toString(),
                 "apiVersion", "v1",
                 "service", "civicfix-platform-backend"
+        ));
+    }
+
+    @GetMapping("/liveness")
+    public ApiResponse<Map<String, Object>> liveness() {
+        return ApiResponse.ok("Service is alive", Map.of(
+                "status", "UP",
+                "probe", "LIVENESS",
+                "timestamp", Instant.now().toString()
+        ));
+    }
+
+    @GetMapping("/readiness")
+    public ApiResponse<Map<String, Object>> readiness() {
+        return ApiResponse.ok("Service is ready to accept traffic", Map.of(
+                "status", "UP",
+                "probe", "READINESS",
+                "timestamp", Instant.now().toString()
         ));
     }
 }

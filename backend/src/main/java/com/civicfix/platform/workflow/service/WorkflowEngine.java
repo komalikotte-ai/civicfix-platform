@@ -20,16 +20,18 @@ public class WorkflowEngine {
 
     private final WorkflowTransitionRepository transitionRepository;
 
-    // Allowed transition map for municipal complaints
+    // Strict municipal grievance lifecycle state machine
     private static final Map<ComplaintStatus, Set<ComplaintStatus>> ALLOWED_TRANSITIONS = Map.of(
-            ComplaintStatus.SUBMITTED, Set.of(ComplaintStatus.ACKNOWLEDGED, ComplaintStatus.REJECTED),
+            ComplaintStatus.NEW, Set.of(ComplaintStatus.ACKNOWLEDGED, ComplaintStatus.ASSIGNED, ComplaintStatus.REJECTED),
+            ComplaintStatus.SUBMITTED, Set.of(ComplaintStatus.ACKNOWLEDGED, ComplaintStatus.ASSIGNED, ComplaintStatus.REJECTED),
             ComplaintStatus.ACKNOWLEDGED, Set.of(ComplaintStatus.ASSIGNED, ComplaintStatus.REJECTED),
-            ComplaintStatus.ASSIGNED, Set.of(ComplaintStatus.IN_PROGRESS, ComplaintStatus.ESCALATED, ComplaintStatus.REJECTED),
-            ComplaintStatus.IN_PROGRESS, Set.of(ComplaintStatus.RESOLVED, ComplaintStatus.ESCALATED),
-            ComplaintStatus.ESCALATED, Set.of(ComplaintStatus.IN_PROGRESS, ComplaintStatus.RESOLVED),
-            ComplaintStatus.RESOLVED, Set.of(ComplaintStatus.CLOSED, ComplaintStatus.IN_PROGRESS),
-            ComplaintStatus.REJECTED, Set.of(ComplaintStatus.SUBMITTED),
-            ComplaintStatus.CLOSED, Set.of()
+            ComplaintStatus.ASSIGNED, Set.of(ComplaintStatus.IN_PROGRESS, ComplaintStatus.ON_HOLD, ComplaintStatus.REJECTED, ComplaintStatus.ASSIGNED, ComplaintStatus.RESOLVED),
+            ComplaintStatus.IN_PROGRESS, Set.of(ComplaintStatus.RESOLVED, ComplaintStatus.ON_HOLD, ComplaintStatus.ASSIGNED),
+            ComplaintStatus.ON_HOLD, Set.of(ComplaintStatus.IN_PROGRESS, ComplaintStatus.ASSIGNED, ComplaintStatus.REJECTED),
+            ComplaintStatus.RESOLVED, Set.of(ComplaintStatus.CLOSED, ComplaintStatus.REOPENED),
+            ComplaintStatus.CLOSED, Set.of(ComplaintStatus.REOPENED),
+            ComplaintStatus.REOPENED, Set.of(ComplaintStatus.ASSIGNED, ComplaintStatus.IN_PROGRESS, ComplaintStatus.REJECTED),
+            ComplaintStatus.REJECTED, Set.of(ComplaintStatus.REOPENED, ComplaintStatus.NEW, ComplaintStatus.SUBMITTED)
     );
 
     public WorkflowEngine(WorkflowTransitionRepository transitionRepository) {
@@ -37,8 +39,16 @@ public class WorkflowEngine {
     }
 
     public boolean isTransitionAllowed(ComplaintStatus currentStatus, ComplaintStatus targetStatus) {
+        if (currentStatus == targetStatus && currentStatus == ComplaintStatus.ASSIGNED) {
+            // Reassignment within ASSIGNED state is permitted
+            return true;
+        }
         Set<ComplaintStatus> allowedTargets = ALLOWED_TRANSITIONS.get(currentStatus);
         return allowedTargets != null && allowedTargets.contains(targetStatus);
+    }
+
+    public Set<ComplaintStatus> getAllowedNextStatuses(ComplaintStatus currentStatus) {
+        return ALLOWED_TRANSITIONS.getOrDefault(currentStatus, Set.of());
     }
 
     @Transactional
@@ -47,7 +57,8 @@ public class WorkflowEngine {
 
         if (!isTransitionAllowed(currentStatus, targetStatus)) {
             throw new BusinessException(
-                    String.format("Invalid status transition from '%s' to '%s'", currentStatus, targetStatus),
+                    String.format("Invalid status transition from '%s' to '%s'. Allowed transitions: %s",
+                            currentStatus, targetStatus, getAllowedNextStatuses(currentStatus)),
                     "INVALID_STATUS_TRANSITION"
             );
         }

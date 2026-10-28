@@ -1,5 +1,6 @@
 package com.civicfix.platform.security.config;
 
+import com.civicfix.platform.common.api.CorrelationIdFilter;
 import com.civicfix.platform.security.jwt.JwtAccessDeniedHandler;
 import com.civicfix.platform.security.jwt.JwtAuthenticationEntryPoint;
 import com.civicfix.platform.security.jwt.JwtAuthenticationFilter;
@@ -24,15 +25,18 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    private final CorrelationIdFilter correlationIdFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler accessDeniedHandler;
     private final CorsConfigurationSource corsConfigurationSource;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+    public SecurityConfig(CorrelationIdFilter correlationIdFilter,
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
                           JwtAuthenticationEntryPoint authenticationEntryPoint,
                           JwtAccessDeniedHandler accessDeniedHandler,
                           CorsConfigurationSource corsConfigurationSource) {
+        this.correlationIdFilter = correlationIdFilter;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.accessDeniedHandler = accessDeniedHandler;
@@ -52,7 +56,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Public Authentication Endpoints
+                        // Public Authentication & Health Endpoints
                         .requestMatchers(
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/register",
@@ -62,7 +66,8 @@ public class SecurityConfig {
                                 "/api/v1/auth/verify-email",
                                 "/api/v1/auth/resend-verification",
                                 "/api/v1/auth/logout",
-                                "/api/v1/health",
+                                "/api/v1/health/**",
+                                "/actuator/**",
                                 "/api/v1/complaints/track/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -74,6 +79,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
 
+        http.addFilterBefore(correlationIdFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

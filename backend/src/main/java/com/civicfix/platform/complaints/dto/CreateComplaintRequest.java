@@ -1,52 +1,99 @@
 package com.civicfix.platform.complaints.dto;
 
 import com.civicfix.platform.complaints.enums.ComplaintPriority;
+import com.civicfix.platform.complaints.enums.ComplaintSeverity;
+import com.civicfix.platform.complaints.enums.ComplaintSource;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateComplaintRequest {
+
+    @NotBlank(message = "Complaint title is required")
+    @Size(max = 200, message = "Title cannot exceed 200 characters")
+    private String title;
+
+    @NotBlank(message = "Complaint description is required")
+    private String description;
+
+    @NotBlank(message = "Category is required")
+    private String category;
 
     @NotNull(message = "Ward ID is required")
     private Long wardId;
 
     private Long departmentId;
 
-    @NotBlank(message = "Complaint title is required")
-    @Size(min = 5, max = 200, message = "Title must be between 5 and 200 characters")
-    private String title;
-
-    @NotBlank(message = "Complaint description is required")
-    @Size(min = 10, message = "Description must be at least 10 characters")
-    private String description;
-
-    @NotBlank(message = "Complaint category is required")
-    private String category;
-
     private ComplaintPriority priority = ComplaintPriority.MEDIUM;
+
+    private ComplaintSeverity severity = ComplaintSeverity.MEDIUM;
+
+    private ComplaintSource source = ComplaintSource.CITIZEN_PORTAL;
+
     private String addressLine;
+
+    @Size(max = 255, message = "Landmark cannot exceed 255 characters")
+    private String landmark;
+
     private BigDecimal latitude;
     private BigDecimal longitude;
+
+    private List<AttachmentItem> attachments = new ArrayList<>();
 
     public CreateComplaintRequest() {
     }
 
-    public Long getWardId() {
-        return wardId;
-    }
+    public static class AttachmentItem {
+        private String fileName;
+        private String fileUrl;
+        private String fileType;
+        private Long fileSize;
 
-    public void setWardId(Long wardId) {
-        this.wardId = wardId;
-    }
+        public AttachmentItem() {
+        }
 
-    public Long getDepartmentId() {
-        return departmentId;
-    }
+        public AttachmentItem(String fileName, String fileUrl, String fileType, Long fileSize) {
+            this.fileName = fileName;
+            this.fileUrl = fileUrl;
+            this.fileType = fileType;
+            this.fileSize = fileSize;
+        }
 
-    public void setDepartmentId(Long departmentId) {
-        this.departmentId = departmentId;
+        public String getFileName() {
+            return fileName;
+        }
+
+        public void setFileName(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public String getFileUrl() {
+            return fileUrl;
+        }
+
+        public void setFileUrl(String fileUrl) {
+            this.fileUrl = fileUrl;
+        }
+
+        public String getFileType() {
+            return fileType;
+        }
+
+        public void setFileType(String fileType) {
+            this.fileType = fileType;
+        }
+
+        public Long getFileSize() {
+            return fileSize;
+        }
+
+        public void setFileSize(Long fileSize) {
+            this.fileSize = fileSize;
+        }
     }
 
     public String getTitle() {
@@ -73,6 +120,22 @@ public class CreateComplaintRequest {
         this.category = category;
     }
 
+    public Long getWardId() {
+        return wardId;
+    }
+
+    public void setWardId(Long wardId) {
+        this.wardId = wardId;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
     public ComplaintPriority getPriority() {
         return priority;
     }
@@ -81,12 +144,36 @@ public class CreateComplaintRequest {
         this.priority = priority;
     }
 
+    public ComplaintSeverity getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(ComplaintSeverity severity) {
+        this.severity = severity;
+    }
+
+    public ComplaintSource getSource() {
+        return source;
+    }
+
+    public void setSource(ComplaintSource source) {
+        this.source = source;
+    }
+
     public String getAddressLine() {
         return addressLine;
     }
 
     public void setAddressLine(String addressLine) {
         this.addressLine = addressLine;
+    }
+
+    public String getLandmark() {
+        return landmark;
+    }
+
+    public void setLandmark(String landmark) {
+        this.landmark = landmark;
     }
 
     public BigDecimal getLatitude() {
@@ -103,5 +190,13 @@ public class CreateComplaintRequest {
 
     public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
+    }
+
+    public List<AttachmentItem> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<AttachmentItem> attachments) {
+        this.attachments = attachments;
     }
 }

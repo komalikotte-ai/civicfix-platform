@@ -14,11 +14,13 @@ public class ApiErrorResponse {
     private String errorCode;
     private String message;
     private String path;
+    private String requestId;
     private List<ValidationErrorDetail> validationErrors;
     private Instant timestamp;
 
     public ApiErrorResponse() {
         this.success = false;
+        this.requestId = CorrelationIdContext.get();
         this.timestamp = Instant.now();
         this.validationErrors = new ArrayList<>();
     }
@@ -29,6 +31,7 @@ public class ApiErrorResponse {
         this.errorCode = errorCode;
         this.message = message;
         this.path = path;
+        this.requestId = CorrelationIdContext.get();
         this.timestamp = Instant.now();
         this.validationErrors = new ArrayList<>();
     }
@@ -39,6 +42,7 @@ public class ApiErrorResponse {
         this.errorCode = errorCode;
         this.message = message;
         this.path = path;
+        this.requestId = CorrelationIdContext.get();
         this.timestamp = Instant.now();
         this.validationErrors = validationErrors != null ? validationErrors : new ArrayList<>();
     }
@@ -77,6 +81,14 @@ public class ApiErrorResponse {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public List<ValidationErrorDetail> getValidationErrors() {
