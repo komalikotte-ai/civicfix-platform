@@ -1,0 +1,49 @@
+{
+  "app": {
+    "title": "सिविकफिक्स",
+    "subtitle": "नगर निगम शिकायत एवं नागरिक सेवा प्रबंधन"
+  },
+  "nav": {
+    "dashboard": "डैशबोर्ड",
+    "complaints": "शिकायतें",
+    "newComplaint": "नई शिकायत दर्ज करें",
+    "operations": "संचालन",
+    "wards": "वार्ड",
+    "departments": "विभाग",
+    "analytics": "एनालिटिक्स",
+    "logout": "लॉग आउट",
+    "login": "साइन इन",
+    "register": "पंजीकरण"
+  },
+  "status": {
+    "SUBMITTED": "दर्ज की गई",
+    "ACKNOWLEDGED": "स्वीकृत",
+    "ASSIGNED": "अधिकारी को सौंपी गई",
+    "IN_PROGRESS": "प्रगति पर",
+    "RESOLVED": "समाधानित",
+    "CLOSED": "बंद",
+    "REJECTED": "खारिज",
+    "ESCALATED": "उच्च अधिकारी को प्रेषित"
+  },
+  "priority": {
+    "LOW": "निम्न प्राथमिकता",
+    "MEDIUM": "मध्यम प्राथमिकता",
+    "HIGH": "उच्च प्राथमिकता",
+    "CRITICAL": "अति आवश्यक"
+  },
+  "common": {
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "submit": "जमा करें",
+    "loading": "लोड हो रहा है...",
+    "search": "खोजें...",
+    "actions": "कार्रवाई",
+    "filter": "फ़िल्टर",
+    "trackingNumber": "ट्रैकिंग संख्या",
+    "citizen": "नागरिक",
+    "ward": "वार्ड",
+    "department": "विभाग",
+    "sla": "एस एल ए समय",
+    "createdAt": "शिकायत दिनांक"
+  }
+}

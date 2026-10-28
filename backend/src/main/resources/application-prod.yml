@@ -1,0 +1,15 @@
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    root: WARN
+    com.civicfix.platform: INFO
+    org.springframework.security: WARN

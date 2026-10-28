@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: civicfix-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-civicfix_db}
+      MYSQL_USER: ${DB_USER:-civicfix_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-civicfix_pass}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_pass}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/src/main/resources/db/migration/V1__initial_schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER:-civicfix_user}", "-p${DB_PASSWORD:-civicfix_pass}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: civicfix-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-civicfix_db}
+      DB_USER: ${DB_USER:-civicfix_user}
+      DB_PASSWORD: ${DB_PASSWORD:-civicfix_pass}
+      JWT_SECRET: ${JWT_SECRET:-civicfixSuperSecretKeyForDevelopmentMustBe32CharactersOrLonger}
+      AI_SERVICE_URL: http://ai-service:8000
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: civicfix-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080/api/v1
+    ports:
+      - "5173:5173"
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: civicfix-ai-service
+    restart: unless-stopped
+    environment:
+      PORT: 8000
+      ENVIRONMENT: development
+      BACKEND_API_URL: http://backend:8080/api/v1
+    ports:
+      - "8000:8000"
+
+volumes:
+  mysql_data:

@@ -1,0 +1,44 @@
+# Compiled Java & Maven
+backend/target/
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Node & Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+*.local
+
+# Python & AI Service
+ai-service/__pycache__/
+ai-service/*/__pycache__/
+ai-service/*/*/__pycache__/
+ai-service/*/*/*/__pycache__/
+*.py[cod]
+*$py.class
+ai-service/.pytest_cache/
+ai-service/.venv/
+venv/
+ENV/
+
+# Environment files
+.env
+*.env.local
+backend/.env
+frontend/.env
+ai-service/.env
+
+# IDE & OS Files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+*.log
