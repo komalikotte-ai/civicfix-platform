@@ -1,0 +1,45 @@
+package com.civicfix.platform.common.api;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.UUID;
+
+/**
+ * Filter that establishes and propagates a unique Correlation/Request ID across
+ * all incoming HTTP requests, MDC logs, and outgoing response headers.
+ */
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class CorrelationIdFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        String correlationId = request.getHeader(CorrelationIdContext.HEADER_CORRELATION_ID);
+        if (correlationId == null || correlationId.isBlank()) {
+            correlationId = request.getHeader(CorrelationIdContext.HEADER_REQUEST_ID);
+        }
+        if (correlationId == null || correlationId.isBlank()) {
+            correlationId = UUID.randomUUID().toString();
+        }
+
+        CorrelationIdContext.set(correlationId);
+        response.setHeader(CorrelationIdContext.HEADER_CORRELATION_ID, correlationId);
+        response.setHeader(CorrelationIdContext.HEADER_REQUEST_ID, correlationId);
+
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            CorrelationIdContext.clear();
+        }
+    }
+}
