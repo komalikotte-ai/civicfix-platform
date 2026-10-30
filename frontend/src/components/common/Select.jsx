@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 export const Select = ({
   label,
@@ -6,42 +6,77 @@ export const Select = ({
   name,
   value,
   onChange,
+  onBlur,
   options = [],
   placeholder = 'Select an option',
-  error = '',
+  error,
+  helperText,
   required = false,
   disabled = false,
   className = '',
   ...props
 }) => {
-  const selectId = id || name;
+  const generatedId = useId();
+  const selectId = id || name || generatedId;
+  const errorId = `${selectId}-error`;
+  const helperId = `${selectId}-helper`;
 
   return (
-    <div className={`flex flex-col gap-1 w-full ${className}`}>
+    <div className="w-full flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={selectId} className="text-xs font-semibold text-gray-700">
-          {label} {required && <span className="text-red-500">*</span>}
+        <label
+          htmlFor={selectId}
+          className="text-xs font-semibold text-slate-700 select-none flex items-center justify-between"
+        >
+          <span>
+            {label}
+            {required && <span className="text-red-500 ml-1" aria-hidden="true">*</span>}
+          </span>
         </label>
       )}
+
       <select
         id={selectId}
         name={name}
-        value={value}
+        value={value ?? ''}
         onChange={onChange}
+        onBlur={onBlur}
         disabled={disabled}
-        className={`px-3 py-2 text-sm rounded border bg-white ${
-          error ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500'
-        } focus:outline-none focus:ring-2 disabled:bg-gray-100 disabled:text-gray-400`}
+        required={required}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? errorId : helperText ? helperId : undefined}
+        className={`w-full px-3 py-2 text-sm rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed bg-white ${
+          error
+            ? 'border-red-300 focus:border-red-500 focus:ring-red-400 bg-red-50/20'
+            : 'border-slate-300 focus:border-blue-500 focus:ring-blue-400'
+        } ${className}`}
         {...props}
       >
-        {placeholder && <option value="">{placeholder}</option>}
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
           </option>
-        ))}
+        )}
+        {options.map((opt) => {
+          const val = typeof opt === 'object' ? opt.value : opt;
+          const lbl = typeof opt === 'object' ? opt.label : opt;
+          return (
+            <option key={val} value={val}>
+              {lbl}
+            </option>
+          );
+        })}
       </select>
-      {error && <span className="text-xs text-red-600 font-medium">{error}</span>}
+
+      {error ? (
+        <p id={errorId} className="text-xs text-red-600 font-medium" role="alert">
+          {error}
+        </p>
+      ) : helperText ? (
+        <p id={helperId} className="text-xs text-slate-500">
+          {helperText}
+        </p>
+      ) : null}
     </div>
   );
 };

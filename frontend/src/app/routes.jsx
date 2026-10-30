@@ -8,8 +8,32 @@ import DashboardPage from '../features/dashboard/DashboardPage';
 import ComplaintsListPage from '../features/complaints/ComplaintsListPage';
 import ComplaintDetailPage from '../features/complaints/ComplaintDetailPage';
 import CreateComplaintPage from '../features/complaints/CreateComplaintPage';
+import CitizenDashboard from '../features/citizen/CitizenDashboard';
+import CitizenGrievanceList from '../features/citizen/CitizenGrievanceList';
+import WardMapView from '../features/maps/WardMapView';
+import PublicTrackPage from '../features/public-portal/PublicTrackPage';
+import PublicLandingPage from '../features/public-portal/PublicLandingPage';
+import PublicTransparencyPage from '../features/public-portal/PublicTransparencyPage';
 
 export const router = createBrowserRouter([
+  // Public Citizen Portal & Tracking Routes (No login required)
+  {
+    path: '/welcome',
+    element: <PublicLandingPage />,
+  },
+  {
+    path: '/transparency',
+    element: <PublicTransparencyPage />,
+  },
+  {
+    path: '/track',
+    element: <PublicTrackPage />,
+  },
+  {
+    path: '/track/:trackingNumber',
+    element: <PublicTrackPage />,
+  },
+
   // Public Auth Routes
   {
     path: '/login',
@@ -31,7 +55,23 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DashboardPage />,
+        element: <CitizenDashboard />,
+      },
+      {
+        path: 'operations-dashboard',
+        element: (
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'DEPT_ADMIN', 'SUPERVISOR', 'OFFICER']}>
+            <DashboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'citizen',
+        element: <CitizenDashboard />,
+      },
+      {
+        path: 'citizen/grievances',
+        element: <CitizenGrievanceList />,
       },
       {
         path: 'complaints',
@@ -46,12 +86,20 @@ export const router = createBrowserRouter([
         element: <ComplaintDetailPage />,
       },
       {
+        path: 'map',
+        element: <WardMapView />,
+      },
+      {
+        path: 'transparency',
+        element: <PublicTransparencyPage />,
+      },
+      {
         path: 'wards',
         element: (
-          <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'DEPT_ADMIN']}>
-            <div className="p-6 bg-white rounded border">
-              <h2 className="text-lg font-bold">Wards Administration</h2>
-              <p className="text-xs text-gray-500 mt-1">Geographical zones management</p>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'DEPT_ADMIN', 'WARD_OFFICER']}>
+            <div className="p-6 bg-white rounded-xl border border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900">Wards Administration</h2>
+              <p className="text-xs text-slate-500 mt-1">Geographical zones and municipal boundary allocations</p>
             </div>
           </ProtectedRoute>
         ),
@@ -59,10 +107,10 @@ export const router = createBrowserRouter([
       {
         path: 'departments',
         element: (
-          <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
-            <div className="p-6 bg-white rounded border">
-              <h2 className="text-lg font-bold">Departments Administration</h2>
-              <p className="text-xs text-gray-500 mt-1">Municipal departments configuration</p>
+          <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'DEPT_ADMIN']}>
+            <div className="p-6 bg-white rounded-xl border border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900">Departments Administration</h2>
+              <p className="text-xs text-slate-500 mt-1">Municipal departments and service categories configuration</p>
             </div>
           </ProtectedRoute>
         ),
