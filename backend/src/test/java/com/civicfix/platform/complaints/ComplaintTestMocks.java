@@ -80,6 +80,13 @@ public class ComplaintTestMocks {
         @Override public List<Complaint> findByStatusNotIn(List<ComplaintStatus> statuses) {
             return map.values().stream().filter(c -> !statuses.contains(c.getStatus())).toList();
         }
+        @Override public Page<Complaint> findByAssetId(Long assetId, Pageable p) {
+            List<Complaint> list = map.values().stream().filter(c -> c.getAsset() != null && assetId.equals(c.getAsset().getId())).toList();
+            return new PageImpl<>(list, p, list.size());
+        }
+        @Override public List<Complaint> findByAssetId(Long assetId) {
+            return map.values().stream().filter(c -> c.getAsset() != null && assetId.equals(c.getAsset().getId())).toList();
+        }
         @Override public void flush() {}
         @Override public <S extends Complaint> S saveAndFlush(S entity) { return save(entity); }
         @Override public <S extends Complaint> List<S> saveAllAndFlush(Iterable<S> entities) { return List.of(); }

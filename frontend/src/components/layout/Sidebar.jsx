@@ -8,6 +8,17 @@ export const Sidebar = () => {
 
   const navItems = [
     { label: t('nav.dashboard'), path: '/', show: true },
+    {
+      label: 'Field Operations',
+      path: '/operations',
+      show:
+        hasRole('FIELD_WORKER') ||
+        hasRole('SUPERVISOR') ||
+        hasRole('DEPT_ADMIN') ||
+        hasRole('SUPER_ADMIN') ||
+        hasRole('ADMIN') ||
+        hasRole('EMPLOYEE'),
+    },
     { label: t('nav.complaints'), path: '/complaints', show: true },
     { label: t('nav.newComplaint'), path: '/complaints/new', show: true },
     { label: t('nav.wards'), path: '/wards', show: hasRole('SUPER_ADMIN') || hasRole('DEPT_ADMIN') },

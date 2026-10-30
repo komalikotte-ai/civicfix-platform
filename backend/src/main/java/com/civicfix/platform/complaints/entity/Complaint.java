@@ -44,6 +44,10 @@ public class Complaint extends BaseAuditableEntity {
     private Ward ward;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asset_id")
+    private com.civicfix.platform.assets.entity.Asset asset;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
 
@@ -444,5 +448,13 @@ public class Complaint extends BaseAuditableEntity {
 
     public void setEscalationHistories(List<ComplaintEscalationHistory> escalationHistories) {
         this.escalationHistories = escalationHistories;
+    }
+
+    public com.civicfix.platform.assets.entity.Asset getAsset() {
+        return asset;
+    }
+
+    public void setAsset(com.civicfix.platform.assets.entity.Asset asset) {
+        this.asset = asset;
     }
 }
