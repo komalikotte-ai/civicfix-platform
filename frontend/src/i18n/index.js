@@ -1,5 +1,5 @@
-import en from './en.json';
-import hi from './hi.json';
+import en from './en.js';
+import hi from './hi.js';
 
 const dictionaries = { en, hi };
 let currentLang = (typeof localStorage !== 'undefined' && localStorage.getItem('civicfix_lang')) || 'en';

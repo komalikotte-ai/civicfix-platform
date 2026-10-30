@@ -1,0 +1,1 @@
+export { WardMapView } from './WardMapView';

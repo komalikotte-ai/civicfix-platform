@@ -16,11 +16,25 @@ export const AuthProvider = ({ children }) => {
         try {
           const profile = await authService.getCurrentUser();
           setUser(profile);
-        } catch (err) {
-          console.warn('Session expired or invalid, clearing local session');
-          tokenService.clearSession();
-          setUser(null);
+        } catch {
+          // If token expired, try refresh before giving up
+          const refreshToken = tokenService.getRefreshToken();
+          if (refreshToken) {
+            try {
+              const refreshed = await authService.refreshToken();
+              setUser(refreshed.user || tokenService.getUser());
+            } catch {
+              tokenService.clearSession();
+              setUser(null);
+            }
+          } else {
+            tokenService.clearSession();
+            setUser(null);
+          }
         }
+      } else {
+        tokenService.clearSession();
+        setUser(null);
       }
       setLoading(false);
     };
@@ -52,17 +66,41 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const logout = useCallback(() => {
-    authService.logout();
-    setUser(null);
-    setError(null);
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+    } finally {
+      setUser(null);
+      setError(null);
+    }
+  }, []);
+
+  const refreshToken = useCallback(async () => {
+    try {
+      const data = await authService.refreshToken();
+      if (data.user) setUser(data.user);
+      return data;
+    } catch (err) {
+      setUser(null);
+      throw err;
+    }
   }, []);
 
   const hasRole = useCallback((requiredRole) => {
-    if (!user || !user.roles) return false;
+    if (!user || !user.roles || !Array.isArray(user.roles)) return false;
     const normalized = requiredRole.startsWith('ROLE_') ? requiredRole : `ROLE_${requiredRole}`;
     return user.roles.includes(normalized);
   }, [user]);
+
+  const hasAnyRole = useCallback((roles = []) => {
+    if (!roles || roles.length === 0) return true;
+    return roles.some((r) => hasRole(r));
+  }, [hasRole]);
+
+  const updateUser = useCallback((updatedUser) => {
+    setUser(updatedUser);
+    tokenService.setUser(updatedUser);
+  }, []);
 
   const value = useMemo(() => ({
     user,
@@ -72,8 +110,11 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    refreshToken,
     hasRole,
-  }), [user, loading, error, login, register, logout, hasRole]);
+    hasAnyRole,
+    updateUser,
+  }), [user, loading, error, login, register, logout, refreshToken, hasRole, hasAnyRole, updateUser]);
 
   return (
     <AuthContext.Provider value={value}>
@@ -81,3 +122,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;
