@@ -13,12 +13,17 @@ import CitizenGrievanceList from '../features/citizen/CitizenGrievanceList';
 import WardMapView from '../features/maps/WardMapView';
 import PublicTrackPage from '../features/public-portal/PublicTrackPage';
 import PublicLandingPage from '../features/public-portal/PublicLandingPage';
+import PublicTransparencyPage from '../features/public-portal/PublicTransparencyPage';
 
 export const router = createBrowserRouter([
   // Public Citizen Portal & Tracking Routes (No login required)
   {
     path: '/welcome',
     element: <PublicLandingPage />,
+  },
+  {
+    path: '/transparency',
+    element: <PublicTransparencyPage />,
   },
   {
     path: '/track',
@@ -83,6 +88,10 @@ export const router = createBrowserRouter([
       {
         path: 'map',
         element: <WardMapView />,
+      },
+      {
+        path: 'transparency',
+        element: <PublicTransparencyPage />,
       },
       {
         path: 'wards',

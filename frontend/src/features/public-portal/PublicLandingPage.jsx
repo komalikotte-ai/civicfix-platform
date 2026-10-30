@@ -21,6 +21,12 @@ export const PublicLandingPage = () => {
         </Link>
         <div className="flex items-center gap-3">
           <Link
+            to="/transparency"
+            className="text-xs font-semibold text-blue-700 hover:text-blue-900 px-3 py-1.5 bg-blue-50 rounded-lg border border-blue-100"
+          >
+            📊 Open Governance Portal
+          </Link>
+          <Link
             to="/track"
             className="text-xs font-semibold text-slate-700 hover:text-blue-600 px-3 py-1.5"
           >
@@ -65,6 +71,14 @@ export const PublicLandingPage = () => {
             <Button
               variant="outline"
               size="lg"
+              onClick={() => navigate('/transparency')}
+              className="text-sm font-bold"
+            >
+              📊 Public Transparency Portal
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
               onClick={() => navigate('/track')}
               className="text-sm font-bold"
             >
@@ -103,35 +117,33 @@ export const PublicLandingPage = () => {
             <div className="text-2xl mb-2">💡</div>
             <h3 className="text-sm font-bold text-slate-900">Street Lighting</h3>
             <p className="text-xs text-slate-500 mt-1">
-              Non-functioning streetlights, exposed wiring, dark municipal stretches.
+              Flickering streetlights, unlit dark zones, exposed wire hazards.
             </p>
           </Card>
         </div>
 
-        {/* Emergency & Municipal Helpline */}
-        <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+        {/* Civic Emergency Helpline Banner */}
+        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-slate-800">
           <div>
-            <h3 className="text-lg font-bold">24x7 Emergency Municipal Helpline</h3>
-            <p className="text-xs text-slate-300 mt-1 max-w-md">
-              For immediate emergencies such as major water pipeline bursts, flood warnings, or road sinkholes, dial the municipal control room directly.
+            <h3 className="text-lg font-bold">24x7 Municipal Emergency Helpline</h3>
+            <p className="text-xs text-slate-300 mt-1">
+              For live electric wire hazards, sewer flooding, or building structural collapses.
             </p>
           </div>
-          <div className="flex items-center gap-4 text-center">
-            <div className="bg-slate-800 px-4 py-2.5 rounded-xl border border-slate-700">
-              <div className="text-[10px] text-slate-400 font-bold uppercase">Toll Free</div>
-              <div className="text-lg font-mono font-bold text-emerald-400">1800-425-0011</div>
-            </div>
-            <div className="bg-slate-800 px-4 py-2.5 rounded-xl border border-slate-700">
-              <div className="text-[10px] text-slate-400 font-bold uppercase">Control Room</div>
-              <div className="text-lg font-mono font-bold text-blue-400">040-2111-1111</div>
-            </div>
+          <div className="flex items-center gap-3">
+            <a
+              href="tel:1913"
+              className="px-5 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-mono font-bold text-sm shadow-md transition-colors"
+            >
+              📞 Dial 1913
+            </a>
           </div>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        CivicFix Platform &bull; Ministry of Urban Development & Local Self Governance &copy; {new Date().getFullYear()}
+        CivicFix Municipal Platform &copy; {new Date().getFullYear()} &bull; Citizen Grievance Redressal
       </footer>
     </div>
   );

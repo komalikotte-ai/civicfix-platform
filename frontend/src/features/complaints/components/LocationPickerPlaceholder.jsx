@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Button from '../../../components/common/Button';
 import savedLocationService from '../../../services/savedLocationService';
+import MapLocationPickerModal from '../../maps/components/MapLocationPickerModal';
 
 export const LocationPickerPlaceholder = ({
   latitude,
@@ -8,19 +9,19 @@ export const LocationPickerPlaceholder = ({
   addressLine,
   landmark,
   wardId,
+  category = '',
   wards = [],
   onLocationChange,
   userId,
 }) => {
   const [detectingGps, setDetectingGps] = useState(false);
   const [showSavedModal, setShowSavedModal] = useState(false);
+  const [showMapPickerModal, setShowMapPickerModal] = useState(false);
   const savedLocations = savedLocationService.getSavedLocations(userId);
 
   const handleSimulateGPS = () => {
     setDetectingGps(true);
-    // Simulate high precision GPS lookup
     setTimeout(() => {
-      // Pick coordinates centered in city municipal zone
       const lat = (17.3850 + (Math.random() - 0.5) * 0.05).toFixed(6);
       const lng = (78.4867 + (Math.random() - 0.5) * 0.05).toFixed(6);
 
@@ -45,19 +46,8 @@ export const LocationPickerPlaceholder = ({
     setShowSavedModal(false);
   };
 
-  const handleMapPlaceholderClick = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const xRatio = (e.clientX - rect.left) / rect.width;
-    const yRatio = (e.clientY - rect.top) / rect.height;
-
-    // Simulate pin placement
-    const lat = (17.3850 + (0.5 - yRatio) * 0.04).toFixed(6);
-    const lng = (78.4867 + (xRatio - 0.5) * 0.04).toFixed(6);
-
-    onLocationChange({
-      latitude: parseFloat(lat),
-      longitude: parseFloat(lng),
-    });
+  const handleMapPlaceholderClick = () => {
+    setShowMapPickerModal(true);
   };
 
   return (
@@ -68,6 +58,17 @@ export const LocationPickerPlaceholder = ({
           Grievance Location & Geotagging
         </label>
         <div className="flex items-center gap-2">
+          {/* Interactive Map Picker Modal Trigger */}
+          <Button
+            type="button"
+            size="sm"
+            variant="primary"
+            onClick={() => setShowMapPickerModal(true)}
+            className="text-xs py-1 px-2.5 font-bold shadow-xs"
+          >
+            🗺️ Pick on Map
+          </Button>
+
           {savedLocations.length > 0 && (
             <div className="relative">
               <Button
@@ -77,7 +78,7 @@ export const LocationPickerPlaceholder = ({
                 onClick={() => setShowSavedModal((prev) => !prev)}
                 className="text-xs py-1 px-2.5"
               >
-                📍 Use Saved Location ({savedLocations.length})
+                📍 Use Saved ({savedLocations.length})
               </Button>
 
               {showSavedModal && (
@@ -121,18 +122,25 @@ export const LocationPickerPlaceholder = ({
             loading={detectingGps}
             className="text-xs py-1 px-2.5 text-blue-600 hover:bg-blue-50"
           >
-            🎯 Auto-Detect GPS
+            🎯 Auto GPS
           </Button>
         </div>
       </div>
 
-      {/* Map Integration Placeholder Container */}
+      {/* Map Interactive Banner / Trigger Container */}
       <div
         onClick={handleMapPlaceholderClick}
-        className="relative h-44 w-full rounded-xl border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50/70 via-slate-50 to-indigo-50/70 overflow-hidden cursor-crosshair flex flex-col items-center justify-center text-center p-4 group hover:border-blue-500 transition-colors"
-        title="Click anywhere to position pin"
-        role="region"
-        aria-label="Map location picker placeholder"
+        className="relative h-44 w-full rounded-xl border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50/70 via-slate-50 to-indigo-50/70 overflow-hidden cursor-pointer flex flex-col items-center justify-center text-center p-4 group hover:border-blue-500 transition-colors"
+        title="Click to open interactive map picker"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setShowMapPickerModal(true);
+          }
+        }}
+        aria-label="Open interactive map picker"
       >
         {/* Background Grid Pattern */}
         <div
@@ -154,11 +162,11 @@ export const LocationPickerPlaceholder = ({
         </div>
 
         <div className="relative z-10 mt-2 pointer-events-none">
-          <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-600/10 text-blue-800 text-[11px] font-bold border border-blue-200">
-            Phase 2c Map Integration Placeholder
+          <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[11px] font-bold shadow-xs">
+            Interactive GIS Map Picker
           </span>
           <p className="text-xs text-slate-600 font-medium mt-1">
-            Click anywhere inside grid to set coordinates or use GPS button above
+            Click here to open the full map, search addresses, or drop a pin
           </p>
         </div>
 
@@ -166,16 +174,29 @@ export const LocationPickerPlaceholder = ({
         <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between px-3 py-1.5 rounded-lg bg-white/90 backdrop-blur-xs border border-slate-200 text-[11px] font-mono text-slate-700 pointer-events-auto">
           <div>
             <span className="text-slate-400 mr-1">LAT:</span>
-            <span className="font-semibold text-slate-900">{latitude ? latitude.toFixed(6) : '17.385044'}</span>
+            <span className="font-semibold text-slate-900">{latitude ? Number(latitude).toFixed(6) : '17.385044'}</span>
             <span className="text-slate-400 mx-2">|</span>
             <span className="text-slate-400 mr-1">LNG:</span>
-            <span className="font-semibold text-slate-900">{longitude ? longitude.toFixed(6) : '78.486671'}</span>
+            <span className="font-semibold text-slate-900">{longitude ? Number(longitude).toFixed(6) : '78.486671'}</span>
           </div>
           <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded">
             ✓ Geo-referenced
           </span>
         </div>
       </div>
+
+      {/* Map Location Picker Modal */}
+      {showMapPickerModal && (
+        <MapLocationPickerModal
+          isOpen={showMapPickerModal}
+          onClose={() => setShowMapPickerModal(false)}
+          initialCoords={{ latitude: latitude || 17.385044, longitude: longitude || 78.486671 }}
+          category={category}
+          onConfirmLocation={(loc) => {
+            onLocationChange(loc);
+          }}
+        />
+      )}
     </div>
   );
 };

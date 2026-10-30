@@ -1,1 +1,13 @@
-export { WardMapView } from './WardMapView';
+export { WardMapView } from './WardMapView.jsx';
+export { InteractiveMap } from './components/InteractiveMap.jsx';
+export { AddressSearchBar } from './components/AddressSearchBar.jsx';
+export { ComplaintMapCard } from './components/ComplaintMapCard.jsx';
+export { NearbyComplaintsDrawer } from './components/NearbyComplaintsDrawer.jsx';
+export { DuplicateWarningBanner } from './components/DuplicateWarningBanner.jsx';
+export { MapLocationPickerModal } from './components/MapLocationPickerModal.jsx';
+export { mapProviderRegistry } from './providers/MapProviderRegistry.js';
+export { MapProviderInterface } from './providers/MapProviderInterface.js';
+export { VectorCanvasMapProvider } from './providers/VectorCanvasMapProvider.js';
+export { useMapInstance } from './hooks/useMapInstance.js';
+export { useGeolocation, GEOLOCATION_STATUS } from './hooks/useGeolocation.js';
+export * from './utils/geoUtils.js';

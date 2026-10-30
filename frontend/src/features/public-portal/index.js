@@ -1,2 +1,12 @@
-export { PublicTrackPage } from './PublicTrackPage';
-export { PublicLandingPage } from './PublicLandingPage';
+export { PublicLandingPage } from './PublicLandingPage.jsx';
+export { PublicTrackPage } from './PublicTrackPage.jsx';
+export { PublicTransparencyPage } from './PublicTransparencyPage.jsx';
+export { StatCard } from './components/StatCard.jsx';
+export { SimpleBarChart } from './components/SimpleBarChart.jsx';
+export { SimpleDonutChart } from './components/SimpleDonutChart.jsx';
+export { PublicFilters } from './components/PublicFilters.jsx';
+export { WardResolutionTable } from './components/WardResolutionTable.jsx';
+export { DepartmentPerformanceTable } from './components/DepartmentPerformanceTable.jsx';
+export { PublicProjectTracker } from './components/PublicProjectTracker.jsx';
+export { MonthlyReportsView } from './components/MonthlyReportsView.jsx';
+export { PublicMapComponent } from './components/PublicMapComponent.jsx';
