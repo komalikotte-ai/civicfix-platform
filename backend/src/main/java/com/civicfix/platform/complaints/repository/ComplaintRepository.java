@@ -42,6 +42,9 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
 
     List<Complaint> findByStatusNotIn(List<ComplaintStatus> statuses);
 
+    Page<Complaint> findByAssetId(Long assetId, Pageable pageable);
+    List<Complaint> findByAssetId(Long assetId);
+
     @Query("SELECT c FROM Complaint c WHERE " +
            "(:citizenId IS NULL OR c.citizen.id = :citizenId) AND " +
            "(:departmentId IS NULL OR c.department.id = :departmentId) AND " +

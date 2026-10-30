@@ -8,6 +8,8 @@ import DashboardPage from '../features/dashboard/DashboardPage';
 import ComplaintsListPage from '../features/complaints/ComplaintsListPage';
 import ComplaintDetailPage from '../features/complaints/ComplaintDetailPage';
 import CreateComplaintPage from '../features/complaints/CreateComplaintPage';
+import WorkerDashboard from '../features/fieldworker/WorkerDashboard';
+import JobExecutionPage from '../features/fieldworker/JobExecutionPage';
 
 export const router = createBrowserRouter([
   // Public Auth Routes
@@ -44,6 +46,22 @@ export const router = createBrowserRouter([
       {
         path: 'complaints/:id',
         element: <ComplaintDetailPage />,
+      },
+      {
+        path: 'operations',
+        element: (
+          <ProtectedRoute allowedRoles={['FIELD_WORKER', 'SUPERVISOR', 'DEPT_ADMIN', 'SUPER_ADMIN', 'ADMIN', 'EMPLOYEE']}>
+            <WorkerDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'operations/job/:id',
+        element: (
+          <ProtectedRoute allowedRoles={['FIELD_WORKER', 'SUPERVISOR', 'DEPT_ADMIN', 'SUPER_ADMIN', 'ADMIN', 'EMPLOYEE']}>
+            <JobExecutionPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: 'wards',
